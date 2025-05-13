@@ -1,0 +1,79 @@
+﻿@page "/"
+@using MauiApp1.Service
+
+@inject ITransacaoService TransacaoService
+
+<h3>Registrar Transação</h3>
+
+<div class="form-group">
+    <label>Descrição:</label>
+    <input @bind="descricao" class="form-control" />
+
+    <label>Valor:</label>
+    <input type="number" @bind="valor" class="form-control" />
+
+    <label>Tipo:</label>
+    <select @bind="tipo" class="form-control">
+        <option>Entrada</option>
+        <option>Saida</option>
+    </select>
+
+    @if (tipo == "Entrada")
+    {
+        <label>Categoria:</label>
+        <select @bind="categoria" class="form-control">
+            <option disabled selected value="">Selecione</option>
+            <option>Salário</option>
+            <option>Rendimentos</option>
+        </select>
+    }
+    else if (tipo == "Saida")
+    {
+        <label>Categoria:</label>
+        <select @bind="categoria" class="form-control">
+            <option disabled selected value="">Selecione</option>
+            <option>Lazer</option>
+            <option>Casa</option>
+            <option>Estudos</option>
+            <option>Alimentação</option>
+        </select>
+    }
+
+    <button class="btn btn-primary mt-2" @onclick="Registrar">Registrar</button>
+</div>
+
+@if (!string.IsNullOrEmpty(mensagem))
+{
+    <p class="@(mensagem.StartsWith("Erro") ? "text-danger" : "text-success")">@mensagem</p>
+}
+
+@code {
+    private string descricao = string.Empty;
+    private decimal valor;
+    private string tipo = "Entrada";
+    private string categoria = string.Empty;
+    private string mensagem;
+
+    private async Task Registrar()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(categoria))
+            {
+                mensagem = "Erro: Categoria deve ser selecionada.";
+                return;
+            }
+
+            await TransacaoService.RegistrarAsync(descricao, valor, tipo, categoria);
+            mensagem = "Transação registrada com sucesso!";
+            descricao = "";
+            valor = 0;
+            tipo = "Entrada";
+            categoria = "";
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Erro: {ex.Message}";
+        }
+    }
+}

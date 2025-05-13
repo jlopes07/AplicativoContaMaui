@@ -1,0 +1,60 @@
+﻿@page "/listartransacao"
+
+@inject ITransacaoService TransacaoService
+@using MauiApp1.Service
+@using MauiApp1.Service.MauiApp1.Entities
+@using MauiApp1.Enums
+
+<h3>Transações Registradas</h3>
+
+@if (transacoes == null)
+{
+    <p>Carregando...</p>
+}
+else if (!transacoes.Any())
+{
+    <p>Nenhuma transação registrada.</p>
+}
+else
+{
+    <h4>Saldo: <span style="color:@(saldo >= 0 ? "green" : "red")">@saldo.ToString("C")</span></h4>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Tipo</th>
+                <th>Categoria</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in transacoes)
+            {
+                <tr>
+                    <td>@t.Descricao</td>
+                    <td>@t.Valor.ToString("C")</td>
+                    <td>@t.Tipo</td>
+                    <td>@t.Categoria</td>
+                    <td>@t.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Transacao> transacoes;
+    private decimal saldo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        transacoes = await TransacaoService.ObterTodasAsync();
+
+        // Cálculo do saldo
+        saldo = transacoes.Sum(t =>
+            t.Tipo == TipoTransacao.Entrada ? t.Valor :
+            t.Tipo == TipoTransacao.Saida ? -t.Valor : 0);
+    }
+}
