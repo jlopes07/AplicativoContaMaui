@@ -51,8 +51,6 @@ Os testes estão localizados em TestProject1/UnitTest1.cs e cobrem:
 - O repositório de transações é implementado em memória para fins de demonstração.
 - O projeto utiliza componentes Razor para as páginas.
 
-## Licença
--------
-Este projeto está licenciado sob a MIT License.
+
 
 Desenvolvido com .NET MAUI.
